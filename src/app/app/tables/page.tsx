@@ -58,7 +58,7 @@ export default function TablesPage() {
               <div className="mb-2 flex items-start justify-between">
                 <div>
                   <p className="text-lg font-bold text-slate-900">Table {table.number}</p>
-                  <p className="text-xs text-slate-500">{table.branch.name}{table.section ? ` · ${table.section}` : ""} · {table.seats} seats</p>
+                  <p className="text-xs text-slate-500">{table.branch.name}{table.section ? ` Â· ${table.section}` : ""} Â· {table.seats} seats</p>
                 </div>
                 <Badge variant={table.status === "AVAILABLE" ? "success" : table.status === "BILL_REQUESTED" ? "warning" : "info"}>{table.status.replace(/_/g, " ")}</Badge>
               </div>

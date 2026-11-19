@@ -53,7 +53,7 @@ export default function MenuPage() {
   return (
     <div className="space-y-4">
       <PageHeader title="Menu" description="Categories and items." actions={<div className="flex gap-2"><Button variant="outline" onClick={() => setCatOpen(true)}>Add category</Button><Button onClick={() => { setItem({ ...item, categoryId: data?.categories[0]?.id ?? "" }); setItemOpen(true); }}>Add item</Button></div>} />
-      {!data ? <p className="text-sm text-slate-500">Loading menu…</p> : data.categories.length === 0 ? <p className="text-sm text-slate-500">No categories yet. Create one to start building your menu.</p> : (
+      {!data ? <p className="text-sm text-slate-500">Loading menuâ€¦</p> : data.categories.length === 0 ? <p className="text-sm text-slate-500">No categories yet. Create one to start building your menu.</p> : (
         <div className="space-y-6">
           {data.categories.map((category) => (
             <Card key={category.id}>
@@ -63,7 +63,7 @@ export default function MenuPage() {
                   <div key={it.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 p-3">
                     <div>
                       <div className="flex items-center gap-2"><p className="font-semibold text-slate-900">{it.name}</p>{it.isVegetarian ? <Badge variant="success">Veg</Badge> : null}{!it.isAvailable ? <Badge variant="danger">Unavailable</Badge> : null}</div>
-                      <p className="text-xs text-slate-500">{it.station?.name ? `Station: ${it.station.name} · ` : ""}{money(it.priceCents, "PKR")}</p>
+                      <p className="text-xs text-slate-500">{it.station?.name ? `Station: ${it.station.name} Â· ` : ""}{money(it.priceCents, "PKR")}</p>
                     </div>
                     <Button size="sm" variant={it.isAvailable ? "outline" : "success"} onClick={() => toggle(it.id, it.isAvailable)}>{it.isAvailable ? "Disable" : "Enable"}</Button>
                   </div>

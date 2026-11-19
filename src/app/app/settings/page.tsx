@@ -23,8 +23,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             <Row label="Name" value={data.name} />
             <Row label="Slug" value={data.slug} />
             <Row label="Email" value={data.email} />
-            <Row label="Phone" value={data.phone ?? "—"} />
-            <Row label="City" value={data.city ?? "—"} />
+            <Row label="Phone" value={data.phone ?? "â€”"} />
+            <Row label="City" value={data.city ?? "â€”"} />
             <Row label="Currency" value={data.currency} />
             <Row label="Timezone" value={data.timezone} />
             <Row label="Tax rate" value={`${(data.taxRateBps / 100).toFixed(2)}%`} />
@@ -48,7 +48,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           <CardContent className="space-y-2 text-sm">
             {data.branches.map((b) => (
               <div key={b.id} className="flex items-center justify-between rounded-lg border border-slate-100 p-3">
-                <div><p className="font-medium text-slate-900">{b.name}</p><p className="text-xs text-slate-500">{b.code}{b.address ? ` · ${b.address}` : ""}</p></div>
+                <div><p className="font-medium text-slate-900">{b.name}</p><p className="text-xs text-slate-500">{b.code}{b.address ? ` Â· ${b.address}` : ""}</p></div>
                 <span className={`text-xs font-semibold ${b.isActive ? "text-emerald-600" : "text-slate-400"}`}>{b.isActive ? "Active" : "Inactive"}</span>
               </div>
             ))}

@@ -35,7 +35,7 @@ export default async function WaiterPage({ searchParams }: { searchParams: Promi
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <CardTitle>Table {table.number}</CardTitle>
-                    <p className="text-xs text-slate-500">{table.branch.name}{table.section ? ` · ${table.section}` : ""}</p>
+                    <p className="text-xs text-slate-500">{table.branch.name}{table.section ? ` Â· ${table.section}` : ""}</p>
                   </div>
                   <Badge variant={table.status === "AVAILABLE" ? "success" : table.status === "BILL_REQUESTED" ? "warning" : table.status === "FOOD_READY" ? "success" : "info"}>
                     {table.status.replace(/_/g, " ")}

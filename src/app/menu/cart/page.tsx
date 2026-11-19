@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ type CartView = {
   count: number;
 };
 
-export default function CartPage() {
+function CartInner() {
   const search = useSearchParams();
   const router = useRouter();
   const guest = search.get("guest") || "";
@@ -62,7 +62,7 @@ export default function CartPage() {
     }
   };
 
-  if (!cart) return <div className="flex min-h-screen items-center justify-center text-slate-500">Loading cart…</div>;
+  if (!cart) return <div className="flex min-h-screen items-center justify-center text-slate-500">Loading cartâ€¦</div>;
 
   return (
     <div className="mx-auto min-h-screen max-w-2xl bg-slate-50 px-4 py-6">
@@ -93,9 +93,18 @@ export default function CartPage() {
             <div className="flex items-center justify-between text-sm"><span className="text-slate-600">Subtotal</span><span className="font-semibold">{money(cart.subtotalCents, "PKR")}</span></div>
             <p className="mt-1 text-xs text-slate-500">Tax and service charges will be added on placement.</p>
           </div>
-          <Button className="w-full" size="lg" onClick={place} disabled={placing}>{placing ? "Placing order…" : "Place order"}</Button>
+          <Button className="w-full" size="lg" onClick={place} disabled={placing}>{placing ? "Placing orderâ€¦" : "Place order"}</Button>
         </div>
       )}
     </div>
   );
 }
+
+export default function CartPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50" />}>
+      <CartInner />
+    </Suspense>
+  );
+}
+

@@ -76,15 +76,15 @@ export default function OrdersPage() {
         ))}
       </div>
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        {loading ? <div className="p-8 text-sm text-slate-500">Loading orders…</div> : orders.length === 0 ? <div className="p-8 text-sm text-slate-500">No orders found.</div> : (
+        {loading ? <div className="p-8 text-sm text-slate-500">Loading ordersâ€¦</div> : orders.length === 0 ? <div className="p-8 text-sm text-slate-500">No orders found.</div> : (
           <Table>
             <thead><tr><Th>Order</Th><Th>Table</Th><Th>Items</Th><Th>Status</Th><Th>Total</Th><Th>Time</Th><Th>Actions</Th></tr></thead>
             <tbody>
               {orders.map((order) => (
                 <tr key={order.id}>
                   <Td className="font-semibold">#{order.orderNumber}</Td>
-                  <Td>{order.tableName ?? "—"}</Td>
-                  <Td className="max-w-xs truncate text-xs text-slate-500">{order.items.map((i) => `${i.quantity}× ${i.name}`).join(", ")}</Td>
+                  <Td>{order.tableName ?? "â€”"}</Td>
+                  <Td className="max-w-xs truncate text-xs text-slate-500">{order.items.map((i) => `${i.quantity}Ã— ${i.name}`).join(", ")}</Td>
                   <Td><Badge variant={order.status === "CANCELLED" ? "danger" : order.status === "READY" || order.status === "COMPLETED" ? "success" : order.status === "NEW" ? "warning" : "info"}>{order.status}</Badge></Td>
                   <Td className="font-semibold">{money(order.totalCents, "PKR")}</Td>
                   <Td className="text-xs text-slate-500">{new Date(order.createdAt).toLocaleTimeString()}</Td>

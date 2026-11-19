@@ -15,7 +15,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Card><CardContent className="p-5"><p className="text-xs font-semibold uppercase text-slate-500">Total sales</p><p className="mt-2 text-2xl font-bold">{money(analytics.totalSalesCents, "PKR")}</p></CardContent></Card>
         <Card><CardContent className="p-5"><p className="text-xs font-semibold uppercase text-slate-500">Collected</p><p className="mt-2 text-2xl font-bold">{money(analytics.collectedCents, "PKR")}</p></CardContent></Card>
-        <Card><CardContent className="p-5"><p className="text-xs font-semibold uppercase text-slate-500">Orders</p><p className="mt-2 text-2xl font-bold">{analytics.totalOrders}</p><p className="text-xs text-slate-500">{analytics.completedOrders} completed · {analytics.cancelledOrders} cancelled</p></CardContent></Card>
+        <Card><CardContent className="p-5"><p className="text-xs font-semibold uppercase text-slate-500">Orders</p><p className="mt-2 text-2xl font-bold">{analytics.totalOrders}</p><p className="text-xs text-slate-500">{analytics.completedOrders} completed Â· {analytics.cancelledOrders} cancelled</p></CardContent></Card>
         <Card><CardContent className="p-5"><p className="text-xs font-semibold uppercase text-slate-500">Avg. order</p><p className="mt-2 text-2xl font-bold">{money(analytics.averageOrderValueCents, "PKR")}</p></CardContent></Card>
       </div>
 
@@ -24,7 +24,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
           <CardHeader><CardTitle>Best sellers</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {analytics.bestSellers.length === 0 ? <p className="text-sm text-slate-500">No data yet.</p> : analytics.bestSellers.map((item) => (
-              <div key={item.name} className="flex justify-between text-sm"><span className="font-medium">{item.name}</span><span className="text-slate-500">{item.quantity} sold · {money(item.revenueCents, "PKR")}</span></div>
+              <div key={item.name} className="flex justify-between text-sm"><span className="font-medium">{item.name}</span><span className="text-slate-500">{item.quantity} sold Â· {money(item.revenueCents, "PKR")}</span></div>
             ))}
           </CardContent>
         </Card>
@@ -32,7 +32,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
           <CardHeader><CardTitle>Sales by category</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {analytics.salesByCategory.length === 0 ? <p className="text-sm text-slate-500">No data yet.</p> : analytics.salesByCategory.map((item) => (
-              <div key={item.name} className="flex justify-between text-sm"><span className="font-medium">{item.name}</span><span className="text-slate-500">{item.quantity} items · {money(item.revenueCents, "PKR")}</span></div>
+              <div key={item.name} className="flex justify-between text-sm"><span className="font-medium">{item.name}</span><span className="text-slate-500">{item.quantity} items Â· {money(item.revenueCents, "PKR")}</span></div>
             ))}
           </CardContent>
         </Card>
@@ -40,7 +40,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
           <CardHeader><CardTitle>Payment methods</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {analytics.paymentMethodBreakdown.length === 0 ? <p className="text-sm text-slate-500">No payments recorded today.</p> : analytics.paymentMethodBreakdown.map((item) => (
-              <div key={item.method} className="flex justify-between text-sm"><span className="font-medium">{item.method}</span><span className="text-slate-500">{item.count} payments · {money(item.amountCents, "PKR")}</span></div>
+              <div key={item.method} className="flex justify-between text-sm"><span className="font-medium">{item.method}</span><span className="text-slate-500">{item.count} payments Â· {money(item.amountCents, "PKR")}</span></div>
             ))}
           </CardContent>
         </Card>

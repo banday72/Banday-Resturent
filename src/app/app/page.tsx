@@ -15,8 +15,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   return (
     <div className="space-y-6">
       <PageHeader
-        title={`Overview · ${active?.name ?? "Restaurant"}`}
-        description="Today’s performance at a glance."
+        title={`Overview Â· ${active?.name ?? "Restaurant"}`}
+        description="Todayâ€™s performance at a glance."
         actions={<Link href={`/app/orders?restaurant=${restaurantId}`} className="text-sm font-semibold text-orange-600 hover:underline">View live orders ?</Link>}
       />
       {!analytics ? (
@@ -41,7 +41,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                     {analytics.bestSellers.slice(0, 6).map((item) => (
                       <div key={item.name} className="flex items-center justify-between text-sm">
                         <span className="font-medium text-slate-800">{item.name}</span>
-                        <span className="text-slate-500">{item.quantity} sold · {money(item.revenueCents, "PKR")}</span>
+                        <span className="text-slate-500">{item.quantity} sold Â· {money(item.revenueCents, "PKR")}</span>
                       </div>
                     ))}
                   </div>
@@ -57,8 +57,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                   <div className="space-y-3">
                     {analytics.recentOrders.map((order) => (
                       <div key={order.id} className="flex items-center justify-between text-sm">
-                        <span className="font-medium text-slate-800">#{order.orderNumber} · Table {order.table}</span>
-                        <span className="text-slate-500">{order.status} · {money(order.totalCents, "PKR")}</span>
+                        <span className="font-medium text-slate-800">#{order.orderNumber} Â· Table {order.table}</span>
+                        <span className="text-slate-500">{order.status} Â· {money(order.totalCents, "PKR")}</span>
                       </div>
                     ))}
                   </div>

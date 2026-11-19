@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { useToast } from "@/components/ui/toast";
 
 type Order = { id: string; orderNumber: number; status: string; totalCents: number; createdAt: string; items: Array<{ id: string; name: string; quantity: number; totalCents: number; variationName?: string | null }> };
 
-export default function BillSessionPage() {
+function BillSessionInner() {
   const search = useSearchParams();
   const guest = search.get("guest") || "";
   const qr = search.get("qr") || "";
@@ -60,7 +60,7 @@ export default function BillSessionPage() {
         {qr ? <Link href={`/menu/${qr}`} className="text-sm font-semibold text-orange-600">Back to menu</Link> : null}
       </div>
 
-      {loading ? <p className="text-sm text-slate-500">Loading…</p> : null}
+      {loading ? <p className="text-sm text-slate-500">Loadingâ€¦</p> : null}
       {!loading && orders.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500">No orders placed yet.</div>
       ) : null}
@@ -75,7 +75,7 @@ export default function BillSessionPage() {
             <div className="space-y-1 text-sm text-slate-600">
               {order.items.map((item) => (
                 <div key={item.id} className="flex justify-between">
-                  <span>{item.quantity}× {item.name}{item.variationName ? ` (${item.variationName})` : ""}</span>
+                  <span>{item.quantity}Ã— {item.name}{item.variationName ? ` (${item.variationName})` : ""}</span>
                   <span>{money(item.totalCents, "PKR")}</span>
                 </div>
               ))}
@@ -94,7 +94,7 @@ export default function BillSessionPage() {
           </div>
           <p className="mt-1 text-xs text-slate-500">Includes tax and service charges per order.</p>
           <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-            <Button className="flex-1" onClick={requestBill} disabled={requesting}>{requesting ? "Requesting…" : "Request bill"}</Button>
+            <Button className="flex-1" onClick={requestBill} disabled={requesting}>{requesting ? "Requestingâ€¦" : "Request bill"}</Button>
             {billToken ? <Link href={`/bill/${billToken}`} className="flex-1"><Button variant="outline" className="w-full">View bill</Button></Link> : null}
           </div>
         </div>
@@ -102,3 +102,12 @@ export default function BillSessionPage() {
     </div>
   );
 }
+
+export default function BillSessionPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50" />}>
+      <BillSessionInner />
+    </Suspense>
+  );
+}
+

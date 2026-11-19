@@ -54,11 +54,11 @@ export default function KitchenPage() {
               {orders.filter((o) => o.status === status).map((order) => (
                 <Card key={order.id}>
                   <CardContent className="p-4">
-                    <div className="mb-2 flex items-center justify-between"><p className="font-bold text-slate-900">#{order.orderNumber}</p><span className="text-xs text-slate-500">Table {order.tableName ?? "—"}</span></div>
+                    <div className="mb-2 flex items-center justify-between"><p className="font-bold text-slate-900">#{order.orderNumber}</p><span className="text-xs text-slate-500">Table {order.tableName ?? "â€”"}</span></div>
                     <div className="space-y-1 text-sm text-slate-700">
                       {order.items.map((item) => (
                         <div key={item.id}>
-                          <span className="font-semibold">{item.quantity}×</span> {item.name}
+                          <span className="font-semibold">{item.quantity}Ã—</span> {item.name}
                           {item.variationName ? <span className="text-slate-500"> ({item.variationName})</span> : null}
                           {item.instructions ? <p className="text-xs text-amber-700">Note: {item.instructions}</p> : null}
                         </div>

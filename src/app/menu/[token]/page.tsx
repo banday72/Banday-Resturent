@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+
 import { ShoppingCart, ChevronLeft, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +19,7 @@ type GuestCtx = { guest: { token: string; mode: string }; restaurant: { name: st
 
 
 export default function MenuPage() {
-  const params = useSearchParams();
+
   const qrToken = typeof window === "undefined" ? "" : window.location.pathname.split("/").pop() || "";
   const { toast } = useToast();
   const [ctx, setCtx] = useState<GuestCtx | null>(null);
