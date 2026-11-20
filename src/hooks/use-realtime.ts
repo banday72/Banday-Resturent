@@ -13,10 +13,11 @@ export function useRealtime({ token, events, onEvent }: Options) {
   const handlerRef = useRef(onEvent);
   handlerRef.current = onEvent;
   const eventsKey = events.join(",");
+  const realtimeUrl = process.env.NEXT_PUBLIC_REALTIME_URL;
 
   useEffect(() => {
-    if (!token) return;
-    const socket: Socket = io({
+    if (!token || !realtimeUrl) return;
+    const socket: Socket = io(realtimeUrl, {
       auth: { token },
       transports: ["websocket", "polling"],
     });
@@ -27,5 +28,5 @@ export function useRealtime({ token, events, onEvent }: Options) {
     return () => {
       socket.disconnect();
     };
-  }, [token, eventsKey]);
+  }, [token, eventsKey, realtimeUrl]);
 }

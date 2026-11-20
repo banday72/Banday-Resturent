@@ -4,8 +4,24 @@ type Emitter = {
 
 const globalForRealtime = globalThis as unknown as { __io?: Emitter };
 
+const serviceUrl = process.env.REALTIME_SERVICE_URL?.replace(/\/$/, "");
+const serviceKey = process.env.REALTIME_SERVICE_KEY;
+
 export function emitToRoom(room: string, event: string, payload: unknown) {
-  globalForRealtime.__io?.to(room).emit(event, payload);
+  const io = globalForRealtime.__io;
+  if (io) {
+    io.to(room).emit(event, payload);
+    return;
+  }
+  if (!serviceUrl || !serviceKey) return;
+  void fetch(`${serviceUrl}/_realtime/emit`, {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-realtime-key": serviceKey },
+    body: JSON.stringify({ room, event, payload }),
+    cache: "no-store",
+  }).catch((error) => {
+    if (process.env.NODE_ENV === "development") console.error("[realtime] emit failed", error);
+  });
 }
 
 export function emitToRestaurant(restaurantId: string, event: string, payload: unknown) {
