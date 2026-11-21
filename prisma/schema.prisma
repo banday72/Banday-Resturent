@@ -764,3 +764,32 @@ model PlatformPayment {
 
   @@index([createdAt])
 }
+
+enum DemoRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+model DemoRequest {
+  id                     String            @id @default(cuid())
+  email                  String
+  restaurantName         String?
+  status                 DemoRequestStatus @default(PENDING)
+  clerkUserId            String?
+  clerkEmailAddressId    String?
+  clerkVerificationId    String?
+  demoUserEmail          String?
+  accessExpiresAt        DateTime?
+  approvedAt             DateTime?
+  approvedByEmail        String?
+  rejectedAt             DateTime?
+  note                   String?
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([demoUserEmail])
+}

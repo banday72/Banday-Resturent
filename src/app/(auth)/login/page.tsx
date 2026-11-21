@@ -49,7 +49,7 @@ function LoginInner() {
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <Label>Email</Label>
-            <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="owner@pizzahouse.test" />
+            <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@restaurant.com" />
           </div>
           <div>
             <Label>Password</Label>

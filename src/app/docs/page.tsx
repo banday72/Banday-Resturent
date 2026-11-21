@@ -15,11 +15,8 @@ export default function DocsPage() {
           </ol>
         </section>
         <section>
-          <h2 className="text-lg font-semibold text-slate-900">Demo accounts</h2>
-          <ul className="mt-2 list-disc space-y-1 pl-5">
-            <li>Super admin: <code>admin@restaurant.test</code> / <code>admin123</code></li>
-            <li>Owner (Pizza House): <code>owner@pizzahouse.test</code> / <code>demo123</code></li>
-          </ul>
+          <h2 className="text-lg font-semibold text-slate-900">Demo access</h2>
+          <p className="mt-2 text-sm text-slate-600">Request a 12-hour demo from the home page. Super admin approves the request and emails a one-time code.</p>
         </section>
         <section>
           <h2 className="text-lg font-semibold text-slate-900">Flows</h2>

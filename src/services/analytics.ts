@@ -127,6 +127,14 @@ export async function getSuperAdminAnalytics() {
     prisma.user.count(),
     prisma.order.count(),
   ]);
+  const now = Date.now();
+  const activeRestaurantIds = new Set(
+    subscriptions
+      .filter((subscription) =>
+        ["TRIALING", "ACTIVE"].includes(subscription.status) && subscription.currentPeriodEnd.getTime() > now,
+      )
+      .map((subscription) => subscription.restaurantId),
+  );
   const revenueByPlan = new Map<string, number>();
   for (const payment of payments) {
     const subscription = subscriptions.find((item) => item.id === payment.subscriptionId);
@@ -135,8 +143,8 @@ export async function getSuperAdminAnalytics() {
   }
   return {
     totalRestaurants: restaurants.length,
-    activeRestaurants: restaurants.filter((item) => item.isActive).length,
-    suspendedRestaurants: restaurants.filter((item) => !item.isActive).length,
+    activeRestaurants: restaurants.filter((item) => item.isActive && activeRestaurantIds.has(item.id)).length,
+    suspendedRestaurants: restaurants.filter((item) => !item.isActive || !activeRestaurantIds.has(item.id)).length,
     totalUsers: users,
     totalOrders: orders,
     platformRevenueCents: payments.reduce((sum, payment) => sum + payment.amountCents, 0),

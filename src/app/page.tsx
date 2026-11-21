@@ -27,7 +27,7 @@ export default function Home() {
               <Link href="/register"><Button size="lg">Start free trial <ArrowRight className="h-4 w-4" /></Button></Link>
               <Link href="/login"><Button size="lg" variant="outline">Open dashboard</Button></Link>
             </div>
-            <p className="mt-4 text-sm text-slate-500">Demo: <code className="rounded bg-slate-100 px-1.5 py-0.5">owner@pizzahouse.test</code> / <code className="rounded bg-slate-100 px-1.5 py-0.5">demo123</code></p>
+            <p className="mt-4 text-sm text-slate-500">Want to look around first? <Link href="/demo/request" className="font-semibold text-orange-600 hover:text-orange-700">Request a 12-hour demo →</Link></p>
           </div>
           <div className="rounded-3xl border border-slate-200 bg-gradient-to-br from-orange-50 via-white to-slate-50 p-6 shadow-xl">
             <div className="grid gap-4 sm:grid-cols-2">

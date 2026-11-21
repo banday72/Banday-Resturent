@@ -11,6 +11,9 @@ export async function getAppSession() {
 export async function requireUser() {
   const session = await getAppSession();
   if (!session?.user?.id) redirect("/login");
+  if (session.user.email?.endsWith(DEMO_EMAIL_SUFFIX) && !(await findActiveDemoRequest(session.user.email))) {
+    redirect("/demo/expired");
+  }
   return session.user;
 }
 
@@ -28,9 +31,24 @@ export class HttpError extends Error {
   }
 }
 
+const DEMO_EMAIL_SUFFIX = "@demo.dinedesk.local";
+
+async function findActiveDemoRequest(email?: string | null) {
+  if (!email?.endsWith(DEMO_EMAIL_SUFFIX)) return null;
+  const request = await prisma.demoRequest.findFirst({
+    where: { demoUserEmail: email, status: "APPROVED" },
+    orderBy: { approvedAt: "desc" },
+  });
+  if (!request?.accessExpiresAt || request.accessExpiresAt.getTime() <= Date.now()) return null;
+  return request;
+}
+
 export async function requireApiUser() {
   const session = await getAppSession();
   if (!session?.user?.id) throw new HttpError(401, "Authentication required");
+  if (session.user.email?.endsWith(DEMO_EMAIL_SUFFIX) && !(await findActiveDemoRequest(session.user.email))) {
+    throw new HttpError(403, "Demo access has expired");
+  }
   return session.user;
 }
 
