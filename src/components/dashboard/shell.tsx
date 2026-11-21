@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import {
@@ -80,9 +81,7 @@ export function DashboardShell({
       >
         <div className="flex h-16 items-center justify-between gap-2 border-b border-slate-100 px-5">
           <Link href="/app" className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-500 text-white shadow-sm">
-              <UtensilsCrossed className="h-5 w-5" />
-            </span>
+            <Image src="/logo.png" alt="DineDesk logo" width={36} height={36} unoptimized className="h-9 w-9 rounded-xl object-cover shadow-sm" />
             <span className="text-lg font-extrabold tracking-tight text-slate-900">DineDesk</span>
           </Link>
           <button type="button" className="text-slate-400 lg:hidden" onClick={() => setMobileOpen(false)} aria-label="Close menu">

@@ -16,6 +16,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "DineDesk — Restaurant Management SaaS",
   description: "Multi-restaurant QR ordering, kitchen, billing and analytics platform.",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

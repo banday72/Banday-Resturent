@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { UtensilsCrossed, QrCode, ChefHat, BarChart3, CreditCard, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { QrCode, ChefHat, BarChart3, CreditCard, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -7,7 +8,7 @@ export default function Home() {
     <div className="min-h-screen bg-white text-slate-900">
       <header className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-500 text-white"><UtensilsCrossed className="h-5 w-5" /></span>
+          <Image src="/logo.png" alt="DineDesk logo" width={36} height={36} unoptimized className="h-9 w-9 rounded-xl object-cover" />
           <span className="text-lg font-extrabold tracking-tight">DineDesk</span>
         </Link>
         <div className="flex items-center gap-2">
