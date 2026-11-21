@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { HttpError } from "@/lib/session";
 import { bps, parseJson, publicToken } from "@/lib/utils";
 import { emitToGuest, emitToRestaurant, emitToTableSession } from "@/lib/realtime";
+import { lockOrderSequence, lockTableCart } from "@/lib/db-lock";
 import { getCartView, getCartForGuest } from "@/services/cart";
 import { recalculateBill } from "@/services/billing";
 import type { GuestSession } from "@prisma/client";
@@ -27,19 +28,14 @@ export async function placeOrder(input: {
   const duplicate = await prisma.order.findUnique({ where: { idempotencyKey: input.idempotencyKey } });
   if (duplicate) return duplicate;
 
-  const cartView = await getCartView(guest);
-  if (cartView.items.length === 0) throw new HttpError(400, "Your cart is empty");
-
   const result = await prisma.$transaction(async (tx) => {
     const existing = await tx.order.findUnique({ where: { idempotencyKey: input.idempotencyKey } });
     if (existing) return { order: existing, created: false };
 
-    const lastOrder = await tx.order.findFirst({
-      where: { restaurantId: guest.restaurantId },
-      orderBy: { orderNumber: "desc" },
-      select: { orderNumber: true },
-    });
-    const orderNumber = (lastOrder?.orderNumber ?? 0) + 1;
+    const orderNumber = await nextOrderNumber(tx, guest.restaurantId);
+    await lockTableCart(tx, guest.tableSessionId);
+    const cartView = await getCartView(guest, tx);
+    if (cartView.items.length === 0) throw new HttpError(400, "Your cart is empty");
     const subtotalCents = cartView.subtotalCents;
     const taxCents = bps(subtotalCents, guest.restaurant.taxRateBps);
     const serviceCents = bps(subtotalCents, guest.restaurant.serviceChargeBps);
@@ -86,11 +82,10 @@ export async function placeOrder(input: {
       });
     }
 
-    const cart = await getCartForGuest(guest);
-    if (cart) {
-      await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
-      await tx.cart.update({ where: { id: cart.id }, data: { status: "SUBMITTED" } });
-    }
+    const cart = await getCartForGuest(guest, false, tx);
+    if (!cart) throw new HttpError(400, "Your cart is empty");
+    await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
+    await tx.cart.update({ where: { id: cart.id }, data: { status: "SUBMITTED" } });
 
     await tx.tableSession.update({
       where: { id: guest.tableSessionId },
@@ -135,6 +130,16 @@ export async function placeOrder(input: {
   emitToGuest(guest.id, "order:created", payload);
   emitToTableSession(guest.tableSessionId, "order:created", payload);
   return payload;
+}
+
+async function nextOrderNumber(tx: Tx, restaurantId: string) {
+  await lockOrderSequence(tx, restaurantId);
+  const lastOrder = await tx.order.findFirst({
+    where: { restaurantId },
+    orderBy: { orderNumber: "desc" },
+    select: { orderNumber: true },
+  });
+  return (lastOrder?.orderNumber ?? 0) + 1;
 }
 
 async function getActiveGroupId(tx: Tx, guest: GuestSession) {
@@ -380,11 +385,7 @@ export async function createManualOrder(input: {
 
   const result = await prisma.$transaction(async (tx) => {
     const restaurant = await tx.restaurant.findUniqueOrThrow({ where: { id: input.restaurantId } });
-    const lastOrder = await tx.order.findFirst({
-      where: { restaurantId: input.restaurantId },
-      orderBy: { orderNumber: "desc" },
-      select: { orderNumber: true },
-    });
+    const orderNumber = await nextOrderNumber(tx, input.restaurantId);
     let subtotalCents = 0;
     const prepared: Array<{
       menuItemId: string;
@@ -424,7 +425,7 @@ export async function createManualOrder(input: {
     const serviceCents = bps(subtotalCents, restaurant.serviceChargeBps);
     const order = await tx.order.create({
       data: {
-        orderNumber: (lastOrder?.orderNumber ?? 0) + 1,
+        orderNumber,
         restaurantId: input.restaurantId,
         branchId: input.branchId,
         tableId: session.tableId,

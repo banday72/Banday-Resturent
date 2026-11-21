@@ -1,7 +1,9 @@
+import type { Prisma, GuestSession } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { HttpError } from "@/lib/session";
-import { parseJson } from "@/lib/utils";
-import type { GuestSession } from "@prisma/client";
+import { parseJson, publicToken } from "@/lib/utils";
+
+type DbClient = typeof prisma | Prisma.TransactionClient;
 
 type AddItemInput = {
   menuItemId: string;
@@ -11,12 +13,19 @@ type AddItemInput = {
   instructions?: string | null;
 };
 
-export async function getCartForGuest(guest: GuestSession, create = true) {
-  const key = guest.mode === "GROUP" && guest.groupToken
+export async function getCartForGuest(guest: GuestSession, create = true, client: DbClient = prisma) {
+  const keyPrefix = guest.mode === "GROUP" && guest.groupToken
     ? `group:${guest.groupToken}`
     : `guest:${guest.id}`;
 
-  const existing = await prisma.cart.findFirst({ where: { key, status: "ACTIVE" } });
+  const existing = await client.cart.findFirst({
+    where: {
+      restaurantId: guest.restaurantId,
+      tableSessionId: guest.tableSessionId,
+      key: { startsWith: keyPrefix },
+      status: "ACTIVE",
+    },
+  });
   if (existing) return existing;
   if (!create) return null;
 
@@ -28,14 +37,14 @@ export async function getCartForGuest(guest: GuestSession, create = true) {
     if (group) orderGroupId = group.id;
   }
 
-  return prisma.cart.create({
+  return client.cart.create({
     data: {
       restaurantId: guest.restaurantId,
       branchId: guest.branchId,
       tableSessionId: guest.tableSessionId,
       guestSessionId: guest.mode === "INDIVIDUAL" ? guest.id : null,
       orderGroupId,
-      key,
+      key: `${keyPrefix}:${publicToken()}`,
       status: "ACTIVE",
     },
   });
@@ -106,10 +115,10 @@ export async function clearCart(guest: GuestSession) {
   if (cart) await prisma.cart.update({ where: { id: cart.id }, data: { status: "ABANDONED" } });
 }
 
-export async function getCartView(guest: GuestSession) {
-  const cart = await getCartForGuest(guest, false);
+export async function getCartView(guest: GuestSession, client: DbClient = prisma) {
+  const cart = await getCartForGuest(guest, false, client);
   if (!cart) return { items: [], subtotalCents: 0, count: 0, mode: guest.mode };
-  const items = await prisma.cartItem.findMany({
+  const items = await client.cartItem.findMany({
     where: { cartId: cart.id },
     orderBy: { createdAt: "asc" },
     include: {
