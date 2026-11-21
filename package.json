@@ -7,7 +7,7 @@
     "dev:realtime": "cross-env NODE_ENV=development node server.mjs",
     "build": "prisma generate && next build",
     "start": "next start",
-    "start:realtime": "cross-env NODE_ENV=production node server.mjs",
+    "start:realtime": "node realtime-server.mjs",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
