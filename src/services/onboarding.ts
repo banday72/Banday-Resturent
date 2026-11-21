@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { HttpError } from "@/lib/session";
 import { slugify, publicToken } from "@/lib/utils";
-import { SUBSCRIPTION_PLANS } from "@/lib/constants";
+import { SUBSCRIPTION_PLANS, TRIAL_DAYS } from "@/lib/constants";
 
 export type RegisterRestaurantInput = {
   ownerName: string;
@@ -61,7 +61,7 @@ export async function registerRestaurant(input: RegisterRestaurantInput) {
       data: { userId: user.id, restaurantId: restaurant.id, roleId: ownerRole.id },
     });
     const periodEnd = new Date();
-    periodEnd.setDate(periodEnd.getDate() + 14);
+    periodEnd.setDate(periodEnd.getDate() + TRIAL_DAYS);
     await tx.subscription.create({
       data: {
         restaurantId: restaurant.id,
@@ -116,6 +116,44 @@ export async function createRestaurantByAdmin(input: {
     });
   }
   return created;
+}
+
+export type SubscriptionState = {
+  status: string;
+  planName: string | null;
+  daysRemaining: number | null;
+  expired: boolean;
+  trialing: boolean;
+};
+
+export async function getSubscriptionStatus(restaurantId: string): Promise<SubscriptionState> {
+  const subscription = await prisma.subscription.findFirst({
+    where: { restaurantId },
+    orderBy: { createdAt: "desc" },
+    include: { plan: true },
+  });
+  if (!subscription) {
+    return { status: "NONE", planName: null, daysRemaining: null, expired: true, trialing: false };
+  }
+  const now = Date.now();
+  const end = subscription.currentPeriodEnd.getTime();
+  const expired = end <= now || ["CANCELLED", "SUSPENDED", "PAST_DUE"].includes(subscription.status);
+  return {
+    status: subscription.status,
+    planName: subscription.plan.name,
+    daysRemaining: Math.max(0, Math.ceil((end - now) / 86_400_000)),
+    expired,
+    trialing: subscription.status === "TRIALING" && !expired,
+  };
+}
+
+export async function assertSubscriptionActive(
+  restaurantId: string,
+  message = "Ordering is currently unavailable. Please contact the restaurant staff.",
+) {
+  const state = await getSubscriptionStatus(restaurantId);
+  if (state.expired) throw new HttpError(402, message);
+  return state;
 }
 
 export async function assertPlanLimit(restaurantId: string, resource: "branches" | "tables" | "users") {

@@ -25,6 +25,13 @@ import {
 import { cn } from "@/lib/utils";
 
 type RestaurantOption = { id: string; name: string; slug: string; logoUrl: string | null };
+type SubscriptionBadge = {
+  status: string;
+  planName: string | null;
+  daysRemaining: number | null;
+  expired: boolean;
+  trialing: boolean;
+};
 
 const navItems = [
   { href: "/app", label: "Overview", icon: LayoutDashboard },
@@ -46,6 +53,7 @@ export function DashboardShell({
   restaurants,
   activeRestaurantId,
   isSuperAdmin,
+  subscription,
 }: {
   children: React.ReactNode;
   userName: string;
@@ -53,6 +61,7 @@ export function DashboardShell({
   restaurants: RestaurantOption[];
   activeRestaurantId: string;
   isSuperAdmin: boolean;
+  subscription?: SubscriptionBadge;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -188,6 +197,23 @@ export function DashboardShell({
             </div>
           </div>
         </header>
+        {subscription ? (
+          <div className={cn(
+            "flex flex-wrap items-center justify-between gap-2 border-b px-4 py-2 text-xs sm:px-6",
+            subscription.expired ? "bg-red-50 text-red-700" : subscription.trialing ? "bg-amber-50 text-amber-800" : "bg-emerald-50 text-emerald-700",
+          )}>
+            <span className="font-medium">
+              {subscription.expired
+                ? "Subscription expired — ordering is paused. Please renew in Settings."
+                : subscription.trialing
+                  ? `Free trial: ${subscription.daysRemaining} day${subscription.daysRemaining === 1 ? "" : "s"} left.`
+                  : `${subscription.planName ?? "Your plan"} is active.`}
+            </span>
+            <Link href={hrefWithRestaurant("/app/settings")} className="font-semibold underline underline-offset-2">
+              Manage subscription
+            </Link>
+          </div>
+        ) : null}
         <main className="p-4 sm:p-6">{children}</main>
       </div>
     </div>

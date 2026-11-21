@@ -6,6 +6,7 @@ import { emitToGuest, emitToRestaurant, emitToTableSession } from "@/lib/realtim
 import { lockOrderSequence, lockTableCart } from "@/lib/db-lock";
 import { getCartView, getCartForGuest } from "@/services/cart";
 import { recalculateBill } from "@/services/billing";
+import { assertSubscriptionActive } from "@/services/onboarding";
 import type { GuestSession } from "@prisma/client";
 
 type Tx = Prisma.TransactionClient;
@@ -24,6 +25,7 @@ export async function placeOrder(input: {
   if (guest.tableSession.status === "PAID" || guest.tableSession.status === "CLOSED") {
     throw new HttpError(409, "This table session has already been closed");
   }
+  await assertSubscriptionActive(guest.restaurantId);
 
   const duplicate = await prisma.order.findUnique({ where: { idempotencyKey: input.idempotencyKey } });
   if (duplicate) return duplicate;
@@ -382,6 +384,7 @@ export async function createManualOrder(input: {
   });
   if (!session) throw new HttpError(404, "Table session not found");
   if (input.items.length === 0) throw new HttpError(400, "No items selected");
+  await assertSubscriptionActive(input.restaurantId, "This restaurant's subscription is no longer active. Please renew it in Settings.");
 
   const result = await prisma.$transaction(async (tx) => {
     const restaurant = await tx.restaurant.findUniqueOrThrow({ where: { id: input.restaurantId } });

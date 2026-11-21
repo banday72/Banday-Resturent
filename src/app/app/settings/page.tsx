@@ -62,6 +62,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                 <Row label="Plan" value={subscription.plan.name} />
                 <Row label="Status" value={subscription.status} />
                 <Row label="Period end" value={new Date(subscription.currentPeriodEnd).toLocaleDateString()} />
+                <Row label="Days remaining" value={subscription.status === "TRIALING" ? String(Math.max(0, Math.ceil((new Date(subscription.currentPeriodEnd).getTime() - Date.now()) / 86_400_000))) : "—"} />
                 <Row label="Cancel at period end" value={subscription.cancelAtPeriodEnd ? "Yes" : "No"} />
               </>
             ) : <p className="text-slate-500">No subscription found.</p>}

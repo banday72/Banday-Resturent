@@ -1,3 +1,5 @@
+export const TRIAL_DAYS = 10;
+
 export const PERMISSIONS = [
   { code: "restaurant:read", name: "View restaurant", category: "Restaurant" },
   { code: "restaurant:update", name: "Update restaurant", category: "Restaurant" },
